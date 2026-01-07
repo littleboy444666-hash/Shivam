@@ -1,0 +1,586 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>KK444 MISSION</title>  <!-- Google Fonts for Modern Look -->  
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">  
+  
+<style>  
+    /* ----------------------------------  
+       GLOBAL SETTINGS & CSS RESET  
+    ---------------------------------- */  
+    * {  
+        margin: 0;  
+        padding: 0;  
+        box-sizing: border-box;  
+        user-select: none; /* Prevent text selection */  
+    }  
+
+    body {  
+        background-color: #000000; /* Pure Black */  
+        color: #ffffff;  
+        font-family: 'Poppins', sans-serif;  
+        overflow-x: hidden;  
+        min-height: 100vh;  
+        position: relative;  
+    }  
+
+    /* Background Canvas for Particles */  
+    #bg-canvas {  
+        position: fixed;  
+        top: 0;  
+        left: 0;  
+        width: 100%;  
+        height: 100%;  
+        z-index: 0;  
+        pointer-events: none;  
+    }  
+
+    /* Main Container */  
+    .container {  
+        position: relative;  
+        z-index: 10;  
+        max-width: 600px;  
+        margin: 0 auto;  
+        padding: 20px;  
+        text-align: center;  
+        padding-bottom: 50px;  
+    }  
+
+    /* ----------------------------------  
+       TITLE SECTION & NEON EFFECT  
+    ---------------------------------- */  
+    .title-section {  
+        margin-bottom: 10px;  
+        margin-top: 20px;  
+    }  
+
+    .neon-title {  
+        font-family: 'Orbitron', sans-serif;  
+        font-size: 3.5rem;  
+        font-weight: 900;  
+        letter-spacing: 2px;  
+        animation: neonCycle 5s linear infinite;  
+    }  
+
+    /* Glow Animation: Red, Cyan, Lime, Yellow, Magenta */  
+    @keyframes neonCycle {  
+        0%, 100% { text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 40px #ff0000; color: #fff; }  
+        20% { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff; color: #fff; }  
+        40% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 40px #00ff00; color: #fff; }  
+        60% { text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 40px #ffff00; color: #fff; }  
+        80% { text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff; color: #fff; }  
+    }  
+
+    /* ----------------------------------  
+       DATE DISPLAY  
+    ---------------------------------- */  
+    .date-display {  
+        font-family: 'Orbitron', sans-serif;  
+        font-size: 1.2rem;  
+        color: #aaaaaa;  
+        margin-bottom: 30px;  
+        border-bottom: 1px solid #333;  
+        display: inline-block;  
+        padding-bottom: 5px;  
+    }  
+
+    /* ----------------------------------  
+       MISSION SECTION  
+    ---------------------------------- */  
+    .mission-header {  
+        font-size: 1.8rem;  
+        font-weight: 700;  
+        letter-spacing: 3px;  
+        margin-bottom: 30px;  
+        text-transform: uppercase;  
+        background: linear-gradient(90deg, #fff, #888, #fff);  
+        -webkit-background-clip: text;  
+        background-clip: text;  
+        color: transparent;  
+    }  
+
+    .missions-list {  
+        display: flex;  
+        flex-direction: column;  
+        gap: 20px;  
+    }  
+
+    /* Mission Card */  
+    .mission-card {  
+        background: rgba(255, 255, 255, 0.05);  
+        border: 1px solid rgba(255, 255, 255, 0.1);  
+        border-radius: 15px;  
+        padding: 15px 20px;  
+        display: flex;  
+        justify-content: space-between;  
+        align-items: center;  
+        transition: transform 0.2s, box-shadow 0.2s;  
+        cursor: pointer;  
+        backdrop-filter: blur(5px);  
+    }  
+
+    .mission-card:active {  
+        transform: scale(0.98);  
+    }  
+
+    .mission-name {  
+        font-size: 1.2rem;  
+        font-weight: 600;  
+        text-align: left;  
+        flex: 1;  
+    }  
+
+    /* Mini Boxes Area */  
+    .progress-area {  
+        display: flex;  
+        gap: 10px;  
+    }  
+
+    .mini-box {  
+        width: 25px;  
+        height: 25px;  
+        border: 2px solid #555;  
+        border-radius: 4px;  
+        background: transparent;  
+        transition: all 0.4s ease;  
+    }  
+
+    /* Filled Box Style */  
+    .mini-box.filled {  
+        background: #00ff00;  
+        border-color: #00ff00;  
+        box-shadow: 0 0 10px #00ff00;  
+        transform: scale(1.1);  
+    }  
+
+    /* ----------------------------------  
+       STATES (LOCKED / COMPLETED)  
+    ---------------------------------- */  
+    /* Daily Lock (Opacity Reduced) */  
+    .mission-card.locked-daily {  
+        opacity: 0.6;  
+        cursor: not-allowed;  
+        border-color: #555;  
+    }  
+      
+    .mission-card.locked-daily .mission-name::after {  
+        content: " 🔒 (Wait till 6AM)";  
+        font-size: 0.7rem;  
+        color: #ff4444;  
+        display: block;  
+    }  
+
+    /* Permanent Lock (Before Date) */  
+    .mission-card.perm-locked {  
+        filter: grayscale(1);  
+        opacity: 0.3;  
+        pointer-events: none;  
+    }  
+      
+    .mission-card.perm-locked .mission-name::after {  
+        content: " 🔒 (Locked till 25/01/26)";  
+        font-size: 0.7rem;  
+        display: block;  
+    }  
+
+    /* Completed Mission (All 3 boxes full) */  
+    .mission-card.completed {  
+        border-color: #ffd700; /* Gold */  
+        background: rgba(255, 215, 0, 0.1);  
+        pointer-events: none; /* Disable clicks */  
+    }  
+      
+    .mission-card.completed .mission-name {  
+        color: #ffd700;  
+    }  
+      
+    .mission-card.completed .mission-name::after {  
+        content: " COMPLETED";  
+        font-size: 0.7rem;  
+        color: #ffd700;  
+        display: block;  
+    }  
+
+    /* Hidden Missions (After Date Passed) */  
+    .hidden {  
+        display: none !important;  
+    }  
+
+    /* ----------------------------------  
+       FINAL SCREEN (CONGRATULATIONS)  
+    ---------------------------------- */  
+    #congrats-overlay {  
+        position: fixed;  
+        top: 0;  
+        left: 0;  
+        width: 100%;  
+        height: 100%;  
+        background: rgba(0, 0, 0, 0.9);  
+        z-index: 100;  
+        display: none; /* Hidden by default */  
+        flex-direction: column;  
+        justify-content: center;  
+        align-items: center;  
+        text-align: center;  
+    }  
+
+    .congrats-text {  
+        font-family: 'Orbitron', sans-serif;  
+        font-size: 2.5rem;  
+        color: #ffd700;  
+        text-shadow: 0 0 20px #ffd700;  
+        margin-bottom: 20px;  
+        animation: bounce 1s infinite alternate;  
+    }  
+
+    .congrats-subtext {  
+        font-size: 1.2rem;  
+        color: #fff;  
+    }  
+
+    /* Fireworks Canvas */  
+    #fireworks-canvas {  
+        position: absolute;  
+        top: 0;  
+        left: 0;  
+        width: 100%;  
+        height: 100%;  
+        pointer-events: none;  
+        z-index: 90;  
+    }  
+
+    @keyframes bounce {  
+        from { transform: translateY(0); }  
+        to { transform: translateY(-10px); }  
+    }  
+      
+    @media (max-width: 400px) {  
+        .neon-title { font-size: 2.5rem; }  
+        .mission-card { padding: 12px; }  
+        .mini-box { width: 20px; height: 20px; }  
+    }  
+</style>
+
+</head>  
+<body>  <!-- Background Animation -->  
+<canvas id="bg-canvas"></canvas>  
+  
+<!-- Fireworks Animation (Hidden until triggered) -->  
+<canvas id="fireworks-canvas"></canvas>  
+
+<!-- Congratulations Screen -->  
+<div id="congrats-overlay">  
+    <h1 class="congrats-text">CONGRATULATIONS 🎉</h1>  
+    <p class="congrats-subtext">KK444 MISSION CYCLE COMPLETED</p>  
+</div>  
+
+<!-- Main App -->  
+<div class="container">  
+    <!-- Title -->  
+    <div class="title-section">  
+        <h1 class="neon-title">KK444</h1>  
+    </div>  
+
+    <!-- Date -->  
+    <div id="date-display" class="date-display">  
+        DATE - 01/01/2024  
+    </div>  
+
+    <!-- Section Title -->  
+    <h2 class="mission-header">KK444 MISSION</h2>  
+
+    <!-- Missions List -->  
+    <div id="mission-container" class="missions-list">  
+        <!-- Missions will be injected here by JS -->  
+    </div>  
+</div>  
+
+<script>  
+    /* ----------------------------------  
+       CONFIGURATION & CONSTANTS  
+    ---------------------------------- */  
+    const CONFIG = {  
+        totalBoxes: 3,  
+        unlockHour: 6, // 6:00 AM  
+        cutoffDate: new Date('2026-01-25T00:00:00'), // 25 Jan 2026  
+        storageKey: 'KK444_DATA_V1'  
+    };  
+
+    const MISSION_IDS = {  
+        MATH: 'MATH',  
+        PHYSICS: 'PHYSICS',  
+        CHEMISTRY: 'CHEMISTRY',  
+        HINDI: 'HINDI',  
+        ENGLISH: 'ENGLISH'  
+    };  
+
+    // Initial Data Structure  
+    const defaultData = {  
+        missions: {  
+            [MISSION_IDS.MATH]: { filled: 0, lastClick: null },  
+            [MISSION_IDS.PHYSICS]: { filled: 0, lastClick: null },  
+            [MISSION_IDS.CHEMISTRY]: { filled: 0, lastClick: null },  
+            [MISSION_IDS.HINDI]: { filled: 0, lastClick: null },  
+            [MISSION_IDS.ENGLISH]: { filled: 0, lastClick: null }  
+        }  
+    };  
+
+    /* ----------------------------------  
+       APP STATE MANAGEMENT  
+    ---------------------------------- */  
+    let appData = loadData();  
+
+    function loadData() {  
+        const stored = localStorage.getItem(CONFIG.storageKey);  
+        if (stored) return JSON.parse(stored);  
+        return JSON.parse(JSON.stringify(defaultData)); // Deep copy  
+    }  
+
+    function saveData() {  
+        localStorage.setItem(CONFIG.storageKey, JSON.stringify(appData));  
+    }  
+
+    /* ----------------------------------  
+       DATE & TIME UTILITIES  
+    ---------------------------------- */  
+    function updateDateDisplay() {  
+        const now = new Date();  
+        const day = String(now.getDate()).padStart(2, '0');  
+        const month = String(now.getMonth() + 1).padStart(2, '0');  
+        const year = now.getFullYear();  
+        document.getElementById('date-display').textContent = `DATE - ${day}/${month}/${year}`;  
+    }  
+
+    // Check if user can click today (Reset at 6 AM)  
+    function canClick(lastClickStr) {  
+        if (!lastClickStr) return true;  
+          
+        const now = new Date();  
+        const lastClick = new Date(lastClickStr);  
+          
+        // Determine the "reset time" following the last click  
+        let resetTime = new Date(lastClick);  
+        resetTime.setHours(CONFIG.unlockHour, 0, 0, 0);  
+          
+        // If click was before 6AM, reset is same day 6AM.   
+        // If click was after 6AM, reset is next day 6AM.  
+        if (lastClick.getHours() >= CONFIG.unlockHour) {  
+            resetTime.setDate(resetTime.getDate() + 1);  
+        }  
+
+        return now >= resetTime;  
+    }  
+
+    /* ----------------------------------  
+       CORE LOGIC  
+    ---------------------------------- */  
+    function initApp() {  
+        updateDateDisplay();  
+        renderMissions();  
+        setupBackgroundParticles();  
+          
+        // Auto Update Date  
+        setInterval(updateDateDisplay, 60000); // Every minute  
+    }  
+
+    function renderMissions() {  
+        const container = document.getElementById('mission-container');  
+        container.innerHTML = '';  
+          
+        const now = new Date();  
+        const isAfterCutoff = now >= CONFIG.cutoffDate;  
+
+        const missionList = [  
+            { id: MISSION_IDS.MATH, visible: !isAfterCutoff },  
+            { id: MISSION_IDS.PHYSICS, visible: !isAfterCutoff },  
+            { id: MISSION_IDS.CHEMISTRY, visible: !isAfterCutoff },  
+            { id: MISSION_IDS.HINDI, visible: true, locked: !isAfterCutoff }, // Always visible but locked before date  
+            { id: MISSION_IDS.ENGLISH, visible: true, locked: !isAfterCutoff }  
+        ];  
+
+        // Filter active missions for completion check  
+        let activeMissions = missionList.filter(m => m.visible && !m.locked).map(m => m.id);  
+        let allActiveCompleted = activeMissions.length > 0 && activeMissions.every(id => appData.missions[id].filled >= CONFIG.totalBoxes);  
+
+        // If logic: Auto Reset condition met  
+        if (allActiveCompleted) {  
+            triggerCelebrationAndReset(activeMissions);  
+            return; // Stop rendering until reset  
+        }  
+
+        missionList.forEach(mission => {  
+            if (!mission.visible) return;  
+
+            const data = appData.missions[mission.id];  
+            const isDailyLocked = !canClick(data.lastClick);  
+            const isCompleted = data.filled >= CONFIG.totalBoxes;  
+              
+            // Create HTML Elements  
+            const card = document.createElement('div');  
+            card.className = 'mission-card';  
+              
+            // Add classes based on state  
+            if (mission.locked) card.classList.add('perm-locked');  
+            else if (isCompleted) card.classList.add('completed');  
+            else if (isDailyLocked) card.classList.add('locked-daily');  
+
+            // Mission Name  
+            const nameDiv = document.createElement('div');  
+            nameDiv.className = 'mission-name';  
+            nameDiv.textContent = mission.id;  
+            card.appendChild(nameDiv);  
+
+            // Progress Boxes  
+            const progressArea = document.createElement('div');  
+            progressArea.className = 'progress-area';  
+              
+            for (let i = 0; i < CONFIG.totalBoxes; i++) {  
+                const box = document.createElement('div');  
+                box.className = `mini-box ${i < data.filled ? 'filled' : ''}`;  
+                progressArea.appendChild(box);  
+            }  
+            card.appendChild(progressArea);  
+
+            // Click Handler  
+            card.addEventListener('click', () => {  
+                if (mission.locked || isCompleted || isDailyLocked) return;  
+                handleMissionClick(mission.id);  
+            });  
+
+            container.appendChild(card);  
+        });  
+    }  
+
+    function handleMissionClick(missionId) {  
+        const data = appData.missions[missionId];  
+          
+        // Security check  
+        if (data.filled >= CONFIG.totalBoxes) return;  
+        if (!canClick(data.lastClick)) return;  
+
+        // Update State  
+        data.filled += 1;  
+        data.lastClick = new Date().toISOString();  
+          
+        saveData();  
+        renderMissions(); // Re-render to show lock/progress  
+    }  
+
+    function triggerCelebrationAndReset(activeMissionIds) {  
+        const overlay = document.getElementById('congrats-overlay');  
+        const fwCanvas = document.getElementById('fireworks-canvas');  
+          
+        // Show Overlay  
+        overlay.style.display = 'flex';  
+          
+        // Start Fireworks  
+        const stopFireworks = startFireworks(fwCanvas);  
+
+        // Wait 5 seconds then reset  
+        setTimeout(() => {  
+            // Reset Logic  
+            activeMissionIds.forEach(id => {  
+                appData.missions[id].filled = 0;  
+                // Note: We keep lastClick so they can't spam immediately after reset  
+                // Or we can reset lastClick if we want them to start fresh immediately.  
+                // Keeping lastClick adheres to "one box per day" strictly.  
+            });  
+            saveData();  
+              
+            // Hide Overlay  
+            overlay.style.display = 'none';  
+            stopFireworks();  
+              
+            // Re-render  
+            renderMissions();  
+        }, 5000); // 5 seconds celebration  
+    }  
+
+    /* ----------------------------------  
+       VISUALS: BACKGROUND PARTICLES  
+    ---------------------------------- */  
+    function setupBackgroundParticles() {  
+        const canvas = document.getElementById('bg-canvas');  
+        const ctx = canvas.getContext('2d');  
+        let particles = [];  
+          
+        function resize() {  
+            canvas.width = window.innerWidth;  
+            canvas.height = window.innerHeight;  
+        }  
+        window.addEventListener('resize', resize);  
+        resize();  
+
+        class Particle {  
+            constructor() {  
+                this.reset();  
+            }  
+            reset() {  
+                this.x = Math.random() * canvas.width;  
+                this.y = Math.random() * -canvas.height;  
+                this.speed = Math.random() * 2 + 1;  
+                this.size = Math.random() * 2;  
+                this.opacity = Math.random() * 0.5 + 0.1;  
+            }  
+            update() {  
+                this.y += this.speed;  
+                if (this.y > canvas.height) this.reset();  
+            }  
+            draw() {  
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;  
+                ctx.beginPath();  
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);  
+                ctx.fill();  
+            }  
+        }  
+
+        for(let i=0; i<100; i++) particles.push(new Particle());  
+
+        function animate() {  
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  
+            particles.forEach(p => {  
+                p.update();  
+                p.draw();  
+            });  
+            requestAnimationFrame(animate);  
+        }  
+        animate();  
+    }  
+
+    /* ----------------------------------  
+       VISUALS: FIREWORKS (Canvas)  
+    ---------------------------------- */  
+    function startFireworks(canvas) {  
+        const ctx = canvas.getContext('2d');  
+        let fireworks = [];  
+        let animationId;  
+          
+        canvas.width = window.innerWidth;  
+        canvas.height = window.innerHeight;  
+
+        class Firework {  
+            constructor() {  
+                this.x = Math.random() * canvas.width;  
+                this.y = canvas.height;  
+                this.targetY = Math.random() * (canvas.height / 2);  
+                this.speed = 5 + Math.random() * 5;  
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;  
+                this.particles = [];  
+                this.exploded = false;  
+            }  
+            update() {  
+                if (!this.exploded) {  
+                    this.y -= this.speed;  
+                    if (this.y <= this.targetY) {  
+                        this.explode();  
+                    }  
+                } else {  
+                    this.particles.forEach(p => p.update());  
+                    this.particles = this.particles.filter(p => p.alpha > 0);  
+                }  
+            }  
+            explode() {  
+                this.exploded = true;  
+                for (let i = 0; i < 50; i++) {  
+                    this.particles.push(new FwParticle(this.x, this.y, th
